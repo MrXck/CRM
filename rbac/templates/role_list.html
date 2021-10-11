@@ -1,0 +1,28 @@
+{% extends 'starter.html' %}
+{% load mytag %}
+
+{% block title %}角色展示{% endblock %}
+
+
+{% block content %}
+    <a class="btn btn-info" href="{% url 'role_add' %}">添加角色</a>
+    <table class="table table-hover table-striped table-bordered">
+        <thead>
+            <th>序号</th>
+            <th>name</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+            {% for field in objs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ field.name }}</td>
+                    <td>
+                        <a class="btn btn-info" href="{% next_url request 'role_edit' field.id %}"><span class="fa fa-edit">编辑</span></a>
+                        <a class="btn btn-danger" href="{% next_url request 'role_del' field.id %}"><span class="fa fa-remove">删除</span></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

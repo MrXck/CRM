@@ -1,0 +1,14 @@
+
+<ol class="breadcrumb">
+    {% for i in dict %}
+        {% if forloop.counter == 1 %}
+        <li class="{{ i.class }}"><a href="{{ i.permissions__url }}"><i class="fa fa-dashboard"></i> {{ i.permissions__title }}</a></li>
+        {% else %}
+            <li class="{{ i.class }}">{{ i.permissions__title }}</li>
+        {% endif %}
+    {% endfor %}
+{#    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+{#    <li class="active">Here</li>#}
+</ol>
+
+

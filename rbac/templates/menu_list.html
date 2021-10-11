@@ -1,0 +1,106 @@
+{% extends 'starter.html' %}
+{% load mytag %}
+
+{% block title %}菜单展示{% endblock %}
+
+{#{% block bread %}{% bread request %}{% endblock %}#}
+
+{% block content %}
+    <div class="col-sm-3">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <span class="h3 panel-title"><i class="fa fa-book"></i> 菜单管理</span>
+                <a class="btn btn-success btn-sm pull-right" href="{% url 'menu_add' %}" style="padding: 0 4px;"><i class="fa fa-plus"></i> 新建</a>
+            </div>
+            <div class="panel-body">
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <th>名称</th>
+                    <th>图标</th>
+                    <th>操作</th>
+                    </thead>
+                    <tbody>
+                    {% for field in objs %}
+                        <tr>
+                            <td><a href="{% url 'menu_list' %}?mid={{ field.id }}">{{ field.title }}</a></td>
+                            <td><span class="fa {{ field.icon }}"></span></td>
+                            <td>
+                                <a class="" href="{% next_url request 'menu_edit' field.id %}"><span
+                                        class="fa fa-edit"></span></a>
+                                <a class=""
+                                   href="{% next_url request 'menu_del' field.id %}"><span
+                                        class="fa fa-remove"></span></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-9">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <span class="h3 panel-title"><i class="fa fa-cubes"></i> 权限管理</span>
+{#                <a class="btn btn-primary btn-sm pull-right" href="" style="padding: 0 4px;"><i class="fa fa-scissors"></i> 批量操作</a>#}
+                <a class="btn btn-success btn-sm pull-right" href="{% url 'permission_add' %}" style="padding: 0 4px;"><i class="fa fa-plus"></i> 新建</a>
+            </div>
+            <div class="panel-body">
+                <table class="table table-hover">
+                    <thead>
+                    <th>名称</th>
+                    <th>URL</th>
+                    <th>URL别名</th>
+                    <th>菜单</th>
+                    <th>所属菜单</th>
+                    <th>操作</th>
+                    </thead>
+                    <tbody>
+                    {% for i in permission_objs %}
+                    <tr class="parent" style="background-color: #7fd2ff">
+                        <td class="click"><i class="fa fa-caret-down"></i> {{ i.title }}</td>
+                        <td>{{ i.url }}</td>
+                        <td>{{ i.url_name }}</td>
+                        <td>{{ i.menus__title }}</td>
+                        <td></td>
+                        <td>
+                            <a class="" href="{% next_url request 'permission_edit' i.id %}"><span
+                                    class="fa fa-edit"></span></a>
+                            <a class=""
+                               href="{% next_url request 'permission_del' i.id %}"><span
+                                    class="fa fa-remove"></span></a>
+                        </td>
+                    </tr>
+                        {% for child in i.children %}
+                            <tr class="child" parent="{{ i.title }}">
+                                <td>{{ child.title }}</td>
+                                <td>{{ child.url }}</td>
+                                <td>{{ child.url_name }}</td>
+                                <td></td>
+                                <td>{{ child.parent__title }}</td>
+                                <td>
+                                    <a class="" href="{% next_url request 'permission_edit' child.id %}"><span
+                                            class="fa fa-edit"></span></a>
+                                    <a class=""
+                                       href="{% next_url request 'permission_del' child.id %}"><span
+                                            class="fa fa-remove"></span></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $('.click').click(function () {
+            $(this).find('i').toggleClass('fa-caret-right');
+            $(this).parent().nextUntil('.parent').toggleClass('hidden');
+        })
+    </script>
+{% endblock js %}
+

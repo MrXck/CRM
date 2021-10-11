@@ -1,0 +1,144 @@
+{% extends 'starter.html' %}
+
+{% load mytag %}
+
+{% block css %}
+    <style>
+        .child{
+            display: inline-block;
+        }
+    </style>
+{% endblock css %}
+
+
+{% block title %}权限管理{% endblock title %}
+
+
+{% block content %}
+    <div class="col-sm-3">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <span class="h3 panel-title"><i class="fa fa-book"></i> 用户信息</span>
+            </div>
+            <div class="panel-body">
+                <ul>
+                    {% for user in user_list %}
+                        <li class="{% if user.id|safe == uid %}active{% endif %}"><a href="?uid={{ user.id }}">{{ user.username }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-sm-3">
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="postType" value="role">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <span class="h3 panel-title"><i class="fa fa-book"></i> 角色</span>
+                    {% if uid %}
+                        <button class="btn btn-primary btn-xs pull-right" style="padding: 0 4px;"><i class="fa fa-save"></i> 保存</button>
+                    {% endif %}
+                </div>
+                <div class="panel-body">
+                    提示：点击用户后才能为其分配角色
+                    <table class="table">
+                        <thead>
+                        <th>角色</th>
+                        <th>选择</th>
+                        </thead>
+                        <tbody>
+                        {% for role in role_list %}
+                            <tr class="{% if role.id|safe == rid %}active{% endif %}">
+                                <td><a href="?{% gen_role_url request role.id %}">{{ role.name }}</a></td>
+                                <td>
+                                    {% if role.id in user_has_roles_dict %}
+                                        <input type="checkbox" name="roles" value="{{ role.id }}" checked />
+                                    {% else %}
+                                        <input type="checkbox" name="roles" value="{{ role.id }}" />
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-sm-6">
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="postType" value="permission">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <span class="h3 panel-title"><i class="fa fa-sitemap"></i> 权限分配</span>
+                    {% if rid %}
+                        <button class="btn btn-primary btn-xs pull-right" style="padding: 0 4px;"><i class="fa fa-save"></i> 保存</button>
+                    {% endif %}
+                </div>
+                <div class="panel-body">
+                    提示：点击角色后，才能为其分配权限
+                    <table class="table">
+                        <tbody>
+                        {% for item in all_menu_list %}
+                        <tr style="background-color: #7fd2ff">
+                            <td class="click"><i class="fa fa-caret-down"></i> {{ item.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                            {% for node in item.children %}
+                                <div class="parent">
+                                    {% if node.id in role_has_permissions_dict %}
+                                        <input id="permission_{{ node.id }}" type="checkbox" name="permissions" value="{{ node.id }}" checked >
+                                    {% else %}
+                                        <input id="permission_{{ node.id }}" type="checkbox" name="permissions" value="{{ node.id }}" >
+                                    {% endif %}
+                                    <label for="permission_{{ node.id }}">{{ node.title }}</label>
+                                </div>
+                                <div class="children">
+                                    {% for child in node.children %}
+                                        <div class="child">
+                                            {% if child.id in role_has_permissions_dict %}
+                                                <input id="permission_{{ child.id }}" type="checkbox" name="permissions" value="{{ child.id }}" checked >
+                                            {% else %}
+                                                <input id="permission_{{ child.id }}" type="checkbox" name="permissions" value="{{ child.id }}" >
+                                            {% endif %}
+                                            <label for="permission_{{ child.id }}">{{ child.title }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                            {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+{% endblock content %}
+
+{% block js %}
+    <script>
+        $('.click').click(function () {
+            $(this).find('i').toggleClass('fa-caret-right');
+            $(this).parent().next('tr').toggleClass('hidden');
+        })
+
+        $('.parent').find('input').click(function () {
+            if($(this).prop('checked') === true){
+                $(this).parent().siblings('.children').find('input').prop('checked', true);
+            }else {
+                $(this).parent().siblings('.children').find('input').prop('checked', false);
+            }
+        })
+
+    </script>
+{% endblock js %}

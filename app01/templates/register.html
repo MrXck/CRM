@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}">
+    <script src="{% static '压缩版的jQuery.js' %}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-8 col-xs-offset-2">
+            <h2>注册</h2>
+            <form action="{% url 'register' %}" method="post" novalidate>
+                {% csrf_token %}
+                {% for i in register_obj %}
+                    <div class="form-group">
+                        <label for="{{ i.id_for_label }}">{{ i.label }}</label>
+                        {{ i }}
+                        <span style="font-size: 16px;color: red;">{{ i.errors.0 }}</span>
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <button class="btn btn-success">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+{% extends 'starter.html' %}
+{% load mytag %}
+
+{% block title %}跟进记录展示{% endblock title %}
+
+{% block content %}
+    {% if request|panduan:'add_consult_record' %}
+    <a href="{% url 'add_consult_record' %}" class="btn btn-primary">添加跟进记录</a>
+    {% endif %}
+    <div class="form-inline">
+        <form class="form-group pull-right">
+            <select class="form-control" name="type" id="search_type">
+                <option value="customer__qq_name">所咨询客户</option>
+                <option value="status">跟进状态</option>
+                <option value="note">跟进内容</option>
+                <option value="id">id</option>
+            </select>
+            <input value="{{ kw }}" name="kw" class="form-control" type="text" placeholder="请输入你要搜索的内容">
+        <button class="btn btn-default">搜索</button>
+        </form>
+
+    </div>
+    <form class="form-inline" method="post">
+        {% csrf_token %}
+        <div class="form-group pull-left">
+            <select class="form-control" name="action" id="action">
+                <option value="bulk_delete">批量删除</option>
+            </select>
+            <button class="btn btn-warning">go</button>
+        </div>
+
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+            <th><input type="checkbox" id="select_all">选择</th>
+            <th>序号</th>
+{#            <th>id</th>#}
+            <th>所咨询客户</th>
+            <th>跟进内容</th>
+            <th>跟进状态</th>
+            <th>跟进人</th>
+            <th>跟进日期</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            {% if objs %}
+                {% for consult_record_obj in objs %}
+                    <tr>
+                        <td><input type="checkbox" name="cids" value="{{ consult_record_obj.id }}"></td>
+                        <td>{{ forloop.counter }}</td>
+{#                        <td>{{ consult_record_obj.id }}</td>#}
+                        <td>{{ consult_record_obj.customer }}</td>
+                        <td>{{ consult_record_obj.note|truncatechars:20 }}</td>
+                        <td>{{ consult_record_obj.get_status_display }}</td>
+                        <td>{{ consult_record_obj.consultant }}</td>
+                        <td>{{ consult_record_obj.date|date:"Y-m-d H:i:s" }}</td>
+                        <td>
+                            {% if request|panduan:'edit_consult_record' %}
+                                <a class="btn btn-primary" href="{% next_url request 'edit_consult_record' consult_record_obj.id %}"><i class="fa fa-edit">编辑</i></a>
+                            {% endif %}
+                            {% if request|panduan:'delete_consult_record' %}
+                                <a class="btn btn-danger" href="{% next_url request 'delete_consult_record' consult_record_obj.id %}"><i class="fa fa-remove">删除</i></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </form>
+    {% if page_html %}
+        {{ page_html }}
+    {% endif %}
+{% endblock content %}
+

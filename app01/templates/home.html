@@ -1,0 +1,84 @@
+{% extends 'starter.html' %}
+{% load mytag %}
+
+{% block title %}{% reverse_url request %}{% endblock title %}
+
+{% block content %}
+    {% if request|panduan:'add_customer' %}
+    <a href="{% url 'add_customer' %}" class="btn btn-primary">添加客户</a>
+    {% endif %}
+    <div class="form-inline">
+        <form class="form-group pull-right">
+            <select class="form-control" name="type" id="search_type">
+                <option value="qq">qq</option>
+                <option value="qq_name">qq昵称</option>
+                <option value="name">姓名</option>
+                <option value="id">id</option>
+            </select>
+            <input value="{{ kw }}" name="kw" class="form-control" type="text" placeholder="请输入你要搜索的内容">
+        <button class="btn btn-default">搜索</button>
+        </form>
+
+    </div>
+{#    <form class="form-inline" method="post">#}
+{#        {% csrf_token %}#}
+    <div class="form-inline">
+        <div class="form-group pull-left">
+            <select class="form-control" name="action" id="action">
+                {% if request.path == '/sales/customers/' %}
+                    <option value="to_si">公户转私户</option>
+                {% else %}
+                    <option value="to_gong">私户转公户</option>
+                {% endif %}
+            </select>
+            <button class="btn btn-warning" id="go">go</button>
+        </div>
+
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+            <th><input type="checkbox" id="select_all">选择</th>
+            <th>序号</th>
+            <th>id</th>
+            <th>qq</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>报名状态</th>
+            <th>转介绍自学员</th>
+            <th>跟进记录</th>
+            <th>报名信息</th>
+            <th>销售</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            {% if objs %}
+                {% for customer_obj in objs %}
+                    <tr>
+                        <td><input type="checkbox" name="cids" value="{{ customer_obj.id }}"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ customer_obj.id }}</td>
+                        <td>{{ customer_obj.qq }}</td>
+                        <td>{{ customer_obj.qq_name }}</td>
+                        <td>{{ customer_obj.get_sex_display }}</td>
+                        <td>{{ customer_obj.show_status }}</td>
+                        <td>{{ customer_obj.introduce_from|default:'无' }}</td>
+                        <td><a href="{% url 'consult_record' %}?cid={{ customer_obj.id }}">查看详情</a></td>
+                        <td><a href="{% url 'enrollment' %}?cid={{ customer_obj.id }}">查看详情</a></td>
+                        <td>{{ customer_obj.consultant|default:'暂无' }}</td>
+                        <td>
+{#                            {% if request|panduan:'edit_customer' %}#}
+                            <a class="btn btn-primary" href="{% next_url request 'edit_customer' customer_obj.id %}"><i class="fa fa-edit">编辑</i></a>
+    {#                        <a class="btn btn-danger" href="{% url 'delete_customer' customer_obj.id %}"><i class="fa fa-remove">删除</i></a>#}
+{#                            {% endif %}#}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+{#    </form>#}
+    </div>
+    {% if page_html %}
+        {{ page_html }}
+    {% endif %}
+{% endblock content %}
+

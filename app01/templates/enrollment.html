@@ -1,0 +1,75 @@
+{% extends 'starter.html' %}
+{% load mytag %}
+
+{% block title %}报名信息展示{% endblock title %}
+
+{% block content %}
+    {% if request|panduan:'add_enrollment' %}
+    <a href="{% url 'add_enrollment' %}" class="btn btn-primary">添加报名信息</a>
+    {% endif %}
+    <div class="form-inline">
+        <form class="form-group pull-right">
+            <select class="form-control" name="type" id="search_type">
+                <option value="why_us">为什么报名</option>
+                <option value="customer__qq_name">客户名称</option>
+                <option value="school__name">校区</option>
+            </select>
+            <input value="{{ kw }}" name="kw" class="form-control" type="text" placeholder="请输入你要搜索的内容">
+        <button class="btn btn-default">搜索</button>
+        </form>
+
+    </div>
+    <form class="form-inline" method="post">
+        {% csrf_token %}
+        <div class="form-group pull-left">
+            <select class="form-control" name="action" id="action">
+                <option value="bulk_delete">批量删除</option>
+            </select>
+            <button class="btn btn-warning">go</button>
+        </div>
+
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+            <th><input type="checkbox" id="select_all">选择</th>
+            <th>序号</th>
+{#            <th>id</th>#}
+            <th>为什么报名</th>
+            <th>审批通过</th>
+            <th>报名日期</th>
+            <th>客户名称</th>
+            <th>校区</th>
+            <th>所报班级</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            {% if objs %}
+                {% for enrollment_obj in objs %}
+                    <tr>
+                        <td><input type="checkbox" name="cids" value="{{ enrollment_obj.id }}"></td>
+                        <td>{{ forloop.counter }}</td>
+{#                        <td>{{ enrollment_obj.id }}</td>#}
+                        <td>{{ enrollment_obj.why_us|truncatechars:20 }}</td>
+                        <td>{{ enrollment_obj.contract_approved }}</td>
+                        <td>{{ enrollment_obj.enrolled_date|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ enrollment_obj.customer }}</td>
+                        <td>{{ enrollment_obj.school }}</td>
+                        <td>{{ enrollment_obj.enrolment_class }}</td>
+                        <td>
+                            {% if request|panduan:'edit_enrollment' %}
+                            <a class="btn btn-primary" href="{% next_url request 'edit_enrollment' enrollment_obj.id %}"><i class="fa fa-edit">编辑</i></a>
+                            {% endif %}
+                            {% if request|panduan:'delete_enrollment' %}
+                            <a class="btn btn-danger" href="{% next_url request 'delete_enrollment' enrollment_obj.id %}"><i class="fa fa-remove">删除</i></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </form>
+    {% if page_html %}
+        {{ page_html }}
+    {% endif %}
+{% endblock content %}
+

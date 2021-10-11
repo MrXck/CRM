@@ -1,0 +1,69 @@
+{% extends 'starter.html' %}
+{% load mytag %}
+
+{% block title %}学习记录展示{% endblock title %}
+
+{% block content %}
+    {% if request|panduan:'add_study_record' %}
+    <a href="{% url 'add_study_record' %}" class="btn btn-primary">添加学习记录</a>
+    {% endif %}
+    <div class="form-inline">
+        <form class="form-group pull-right">
+            <select class="form-control" name="type" id="search_type">
+                <option value="day_num">节次</option>
+                <option value="course_title">本节课程标题</option>
+            </select>
+            <input value="{{ kw }}" name="kw" class="form-control" type="text" placeholder="请输入你要搜索的内容">
+        <button class="btn btn-default">搜索</button>
+        </form>
+
+    </div>
+    <form class="form-inline" method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <div class="form-group pull-left">
+            <select class="form-control" name="action" id="action">
+                <option value="bulk_delete">批量删除</option>
+            </select>
+            <button class="btn btn-warning">go</button>
+        </div>
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+            <th><input type="checkbox" id="select_all">选择</th>
+            <th>序号</th>
+            <th>考勤</th>
+            <th>本节成绩</th>
+            <th>作业批语</th>
+            <th>某节课程</th>
+            <th>学员</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            {% if objs %}
+                {% for study_record_obj in objs %}
+                    {{ study_record_obj.id }}
+                    <tr>
+                        <td><input type="checkbox" name="cids" value="{{ study_record_obj.pk }}"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ study_record_obj.attendance }}</td>
+                        <td>{{ study_record_obj.score }}</td>
+                        <td>{{ study_record_obj.homework_note }}</td>
+                        <td>{{ study_record_obj.instance.course_record }}</td>
+                        <td class="hidden">{{ study_record_obj.course_record }}</td>
+                        <td>{{ study_record_obj.instance.student }}</td>
+                        <td class="hidden">{{ study_record_obj.student }}</td>
+                        <td>
+{#                            <a class="btn btn-primary" href="{% next_url request 'edit_study_record' study_record_obj.id %}"><i class="fa fa-edit">编辑</i></a>#}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+        <button class="btn btn-success">提交</button>
+    </form>
+    {% if page_html %}
+        {{ page_html }}
+    {% endif %}
+{% endblock content %}
+

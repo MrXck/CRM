@@ -1,0 +1,74 @@
+{% extends 'starter.html' %}
+{% load mytag %}
+
+{% block title %}课程记录展示{% endblock title %}
+
+{% block content %}
+    {% if request|panduan:'add_course_record' %}
+    <a href="{% url 'add_course_record' %}" class="btn btn-primary">添加课程记录</a>
+    {% endif %}
+    <div class="form-inline">
+        <form class="form-group pull-right">
+            <select class="form-control" name="type" id="search_type">
+                <option value="day_num">节次</option>
+                <option value="course_title">本节课程标题</option>
+            </select>
+            <input value="{{ kw }}" name="kw" class="form-control" type="text" placeholder="请输入你要搜索的内容">
+        <button class="btn btn-default">搜索</button>
+        </form>
+
+    </div>
+    <div class="form-inline">
+        {% csrf_token %}
+        <div class="form-group pull-left">
+            <select class="form-control" name="action" id="action">
+{#                <option value="bulk_delete">批量删除</option>#}
+                <option value="bulk_create_srecord">批量生成学习记录</option>
+            </select>
+            <button class="btn btn-warning" id="go">go</button>
+        </div>
+
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+            <th><input type="checkbox" id="select_all">选择</th>
+            <th>序号</th>
+{#            <th>id</th>#}
+            <th>节次</th>
+            <th>上课日期</th>
+            <th>本节课程标题</th>
+            <th>班级</th>
+            <th>学习记录</th>
+            <th>讲师</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            {% if objs %}
+                {% for course_record_obj in objs %}
+                    <tr>
+                        <td><input type="checkbox" name="cids" value="{{ course_record_obj.id }}"></td>
+                        <td>{{ forloop.counter }}</td>
+{#                        <td>{{ course_record_obj.id }}</td>#}
+                        <td>{{ course_record_obj.day_num }}</td>
+                        <td>{{ course_record_obj.date|date:"Y-m-d" }}</td>
+                        <td>{{ course_record_obj.course_title }}</td>
+                        <td>{{ course_record_obj.re_class }}</td>
+                        <td><a href="{% url 'study_record' course_record_obj.id %}">查看学习记录</a></td>
+                        <td>{{ course_record_obj.teacher }}</td>
+                        <td>
+                            {% if request|panduan:'add_course_record' %}
+                            <a class="btn btn-primary" href="{% next_url request 'edit_course_record' course_record_obj.id %}"><i class="fa fa-edit">编辑</i></a>
+                            {% endif %}
+
+{#                            <a class="btn btn-danger" href="{% next_url request 'delete_enrollment' course_record_obj.id %}"><i class="fa fa-remove">删除</i></a>#}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    {% if page_html %}
+        {{ page_html }}
+    {% endif %}
+{% endblock content %}
+

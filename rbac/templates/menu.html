@@ -1,0 +1,20 @@
+{% for k, v in menu_list.items %}
+    {% if v.permissions__title != '学习记录' and v.permissions__title != '管理' %}
+        <li class="{{ v.class }}"><a href="{{ v.permissions__url }}"><i class="fa fa-link"></i><span>{{ v.permissions__title }}</span></a></li>
+    {% endif %}
+{% endfor %}
+
+{#{% for k, v in menu_list.items %}#}
+{#    {% if v.permissions__title != '学习记录' and v.permissions__title != '管理' %}#}
+{#        <li class="treeview">#}
+{#            <a href="#"><i class="fa fa-link"></i> <span>{{ v.permissions__menus__title }}</span>#}
+{#                <span class="pull-right-container">#}
+{#                    <i class="fa fa-angle-left pull-right"></i>#}
+{#                </span>#}
+{#            </a>#}
+{#            <ul class="treeview-menu">#}
+{#                <li><a href="{{ v.permissions__url }}">{{ v.permissions__title }}</a></li>#}
+{#            </ul>#}
+{#        </li>#}
+{#    {% endif %}#}
+{#{% endfor %}#}
